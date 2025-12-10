@@ -108,3 +108,7 @@ npm run build
 - Powered by React and Vite
 - Styled with Tailwind CSS
 
+- ![EcoLife Banner](https://raw.githubusercontent.com/RangeshPandianPT/Eco_Life/main/banner.png)
+
+
+
