@@ -15,6 +15,7 @@ import CommunityHub from './pages/community-hub';
 import WasteTracker from './pages/waste-tracker';
 import EcoScore from './pages/eco-score';
 import TransportationTracker from './pages/transportation-tracker';
+import EcoTools from './pages/eco-tools';
 
 const Routes = () => {
   return (
@@ -36,6 +37,7 @@ const Routes = () => {
         <Route path="/waste-tracker" element={<WasteTracker />} />
         <Route path="/eco-score" element={<EcoScore />} />
         <Route path="/transportation-tracker" element={<TransportationTracker />} />
+        <Route path="/eco-tools" element={<EcoTools />} />
         <Route path="*" element={<NotFound />} />
       </RouterRoutes>
       </ErrorBoundary>
