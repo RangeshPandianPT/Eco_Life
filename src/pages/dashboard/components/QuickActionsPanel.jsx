@@ -46,6 +46,16 @@ const QuickActionsPanel = () => {
       hoverColor: 'hover:bg-secondary/90',
       route: '/product-details',
       stats: '2,847 eco products available'
+    },
+    {
+      id: 'eco-tools',
+      title: 'Eco Tools',
+      description: 'Missions, receipts, and barcode lookup',
+      icon: 'WandSparkles',
+      color: 'bg-primary text-primary-foreground',
+      hoverColor: 'hover:bg-primary/90',
+      route: '/eco-tools',
+      stats: '3 new productivity features'
     }
   ];
 
@@ -65,7 +75,7 @@ const QuickActionsPanel = () => {
           <span className="text-xs text-muted-foreground">Live</span>
         </div>
       </div>
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
         {quickActions?.map((action) => (
           <button
             key={action?.id}
