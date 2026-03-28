@@ -17,6 +17,7 @@ const Header = () => {
 
   const moreItems = [
     { label: 'Grocery Generator', path: '/grocery-plan-generator', icon: 'ShoppingCart' },
+    { label: 'Eco Tools', path: '/eco-tools', icon: 'WandSparkles' },
   ];
 
   const userProfile = {
