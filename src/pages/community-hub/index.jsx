@@ -121,6 +121,49 @@ const CommunityHub = () => {
     }
   ]);
 
+  const [marketplaceItems, setMarketplaceItems] = useState([
+    {
+      id: 1,
+      title: "Compost Bin (Lightly Used)",
+      description: "Upgraded to a larger bin. Cleaned and ready to go!",
+      condition: "Good",
+      category: "Gardening",
+      location: "Downtown",
+      author: "GreenGuru",
+      image: "🗑️",
+      price: "Free",
+      tags: ["Compost", "Free"]
+    },
+    {
+      id: 2,
+      title: "Vintage Commuter Bike",
+      description: "Needs a new chain, but frame is in excellent condition. Great for eco-commuting.",
+      condition: "Fair",
+      category: "Transport",
+      location: "Northside",
+      author: "CycleCity",
+      image: "🚲",
+      price: "$25",
+      tags: ["Bike", "Upcycle"]
+    },
+    {
+      id: 3,
+      title: "Surplus Garden Tomatoes",
+      description: "My harvest was huge this week! Giving away 5 lbs of organic tomatoes.",
+      condition: "Fresh",
+      category: "Food",
+      location: "West End",
+      author: "PlantBased_Pro",
+      image: "🍅",
+      price: "Free",
+      tags: ["Food", "Local"]
+    }
+  ]);
+
+  const handleClaim = (itemId) => {
+    alert("Message sent to the owner! Thank you for participating in the circular economy ♻️");
+  };
+
   const [newPost, setNewPost] = useState('');
   const [showNewPost, setShowNewPost] = useState(false);
 
@@ -213,7 +256,8 @@ const CommunityHub = () => {
             {[
               { id: 'posts', label: 'Community Posts', icon: '💬' },
               { id: 'challenges', label: 'Group Challenges', icon: '🎯' },
-              { id: 'tips', label: 'Eco Tips', icon: '💡' }
+              { id: 'tips', label: 'Eco Tips', icon: '💡' },
+              { id: 'marketplace', label: 'Marketplace', icon: '♻️' }
             ].map((tab) => (
               <button
                 key={tab.id}
@@ -433,6 +477,53 @@ const CommunityHub = () => {
                           <span className="text-sm font-medium">{tip.votes}</span>
                         </button>
                       </div>
+                    </motion.div>
+                  ))}
+                </div>
+              )}
+
+              {activeTab === 'marketplace' && (
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  {marketplaceItems.map((item, index) => (
+                    <motion.div
+                      key={item.id}
+                      className="bg-white rounded-xl p-6 shadow-lg flex flex-col"
+                      initial={{ opacity: 0, y: 20 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ delay: index * 0.1 }}
+                    >
+                      <div className="flex justify-between items-start mb-4">
+                        <div className="text-4xl">{item.image}</div>
+                        <span className="px-3 py-1 bg-green-100 text-green-700 font-bold rounded-lg shadow-sm">
+                          {item.price}
+                        </span>
+                      </div>
+                      
+                      <h3 className="text-xl font-bold text-gray-800 mb-2">{item.title}</h3>
+                      <p className="text-gray-600 mb-4 flex-1">{item.description}</p>
+                      
+                      <div className="grid grid-cols-2 gap-2 text-sm text-gray-500 mb-4">
+                        <div className="bg-gray-50 p-2 rounded">Condition: <span className="font-semibold text-gray-700">{item.condition}</span></div>
+                        <div className="bg-gray-50 p-2 rounded">Category: <span className="font-semibold text-gray-700">{item.category}</span></div>
+                        <div className="bg-gray-50 p-2 rounded">📍 {item.location}</div>
+                        <div className="bg-gray-50 p-2 rounded">👤 {item.author}</div>
+                      </div>
+
+                      <div className="flex items-center space-x-2 mb-4">
+                        {item.tags.map(tag => (
+                          <span key={tag} className="px-2 py-1 bg-green-50 text-green-600 text-xs rounded-full border border-green-200">
+                            #{tag}
+                          </span>
+                        ))}
+                      </div>
+
+                      <button
+                        onClick={() => handleClaim(item.id)}
+                        className="w-full mt-auto bg-green-500 text-white py-3 rounded-lg hover:bg-green-600 transition-colors font-medium flex items-center justify-center space-x-2"
+                      >
+                        <span>💬</span>
+                        <span>Message Owner</span>
+                      </button>
                     </motion.div>
                   ))}
                 </div>
