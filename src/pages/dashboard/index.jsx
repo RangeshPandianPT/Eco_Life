@@ -9,6 +9,8 @@ import QuickActionsPanel from './components/QuickActionsPanel';
 import AIRecommendationsCarousel from './components/AIRecommendationsCarousel';
 import RecentActivityFeed from './components/RecentActivityFeed';
 import NavigationTiles from './components/NavigationTiles';
+import EcoPetWidget from './components/EcoPetWidget';
+import EcoEducationWidget from './components/EcoEducationWidget';
 
 const Dashboard = () => {
   const navigate = useNavigate();
@@ -108,7 +110,9 @@ const Dashboard = () => {
             </div>
 
             {/* Right Column - Sidebar */}
-            <div className="xl:col-span-1">
+            <div className="xl:col-span-1 space-y-6">
+              <EcoPetWidget />
+              <EcoEducationWidget />
             </div>
           </div>
 
