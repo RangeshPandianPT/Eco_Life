@@ -383,29 +383,55 @@ const EcoTools = () => {
               </div>
               <div>
                 <h2 className="text-xl font-heading font-semibold text-card-foreground">3) Barcode Product Lookup</h2>
-                <p className="text-sm text-muted-foreground">Enter a barcode to compare eco and health scores with alternatives.</p>
+                <p className="text-sm text-muted-foreground">
+                  Enter a real barcode (EAN-13 / UPC) to fetch live data from the{' '}
+                  <a
+                    href="https://world.openfoodfacts.org"
+                    target="_blank"
+                    rel="noreferrer"
+                    className="underline text-primary"
+                  >
+                    Open Food Facts
+                  </a>{' '}
+                  database.
+                </p>
               </div>
             </div>
 
             <div className="flex flex-col md:flex-row gap-3 mb-4">
               <input
+                id="barcode-input"
                 value={barcodeInput}
                 onChange={(event) => setBarcodeInput(event.target.value)}
+                onKeyDown={(e) => e.key === 'Enter' && !barcodeLoading && lookupBarcode()}
                 className="flex-1 h-10 rounded-lg border border-input bg-background px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-ring"
-                placeholder="Enter barcode"
+                placeholder="e.g. 737628064502, 5449000000996"
               />
               <button
                 type="button"
                 onClick={lookupBarcode}
-                className="inline-flex items-center justify-center gap-2 px-4 h-10 bg-accent text-accent-foreground rounded-lg hover:bg-accent/90 transition-organic"
+                disabled={barcodeLoading}
+                className="inline-flex items-center justify-center gap-2 px-4 h-10 bg-accent text-accent-foreground rounded-lg hover:bg-accent/90 transition-organic disabled:opacity-60 disabled:cursor-not-allowed"
               >
-                <Icon name="Search" size={16} />
-                Check product
+                {barcodeLoading ? (
+                  <>
+                    <Icon name="Loader2" size={16} className="animate-spin" />
+                    Fetching…
+                  </>
+                ) : (
+                  <>
+                    <Icon name="Search" size={16} />
+                    Check product
+                  </>
+                )}
               </button>
             </div>
 
             {barcodeError && (
-              <div className="mb-3 text-sm text-error">{barcodeError}</div>
+              <div className="mb-3 p-3 rounded-lg bg-error/10 border border-error/30 text-sm text-error flex items-start gap-2">
+                <Icon name="AlertCircle" size={15} color="var(--color-error)" />
+                {barcodeError}
+              </div>
             )}
 
             {barcodeResult && (
