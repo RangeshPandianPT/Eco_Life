@@ -139,9 +139,10 @@ const EcoTools = () => {
   const [receiptInput, setReceiptInput] = useState('Spinach 4.50\nTofu Pack 3.20\nSnack Chips 2.30\nOats 3.10');
   const [receiptSummary, setReceiptSummary] = useState(null);
 
-  const [barcodeInput, setBarcodeInput] = useState('8901234567890');
+  const [barcodeInput, setBarcodeInput] = useState('');
   const [barcodeResult, setBarcodeResult] = useState(null);
   const [barcodeError, setBarcodeError] = useState('');
+  const [barcodeLoading, setBarcodeLoading] = useState(false);
 
   const dailyMissions = useMemo(() => buildDailyMissions(todayKey), [todayKey]);
 
@@ -200,18 +201,25 @@ const EcoTools = () => {
     setReceiptSummary(summary);
   };
 
-  const lookupBarcode = () => {
+  const lookupBarcode = async () => {
     const trimmed = barcodeInput.trim();
-    const result = BARCODE_CATALOG[trimmed];
-
-    if (!result) {
-      setBarcodeResult(null);
-      setBarcodeError('Barcode not in demo catalog. Try 8901234567890, 9780201379624, or 4006381333931.');
+    if (!trimmed) {
+      setBarcodeError('Please enter a barcode number.');
       return;
     }
 
+    setBarcodeLoading(true);
+    setBarcodeResult(null);
     setBarcodeError('');
-    setBarcodeResult(result);
+
+    try {
+      const result = await fetchProductFromOpenFoodFacts(trimmed);
+      setBarcodeResult(result);
+    } catch (err) {
+      setBarcodeError(err.message || 'Failed to fetch product. Please try again.');
+    } finally {
+      setBarcodeLoading(false);
+    }
   };
 
   return (
