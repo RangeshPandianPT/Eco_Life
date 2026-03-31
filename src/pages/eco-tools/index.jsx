@@ -13,28 +13,62 @@ const DAILY_MISSION_POOL = [
   { id: 'local-food', label: 'Buy one local or seasonal item', points: 20 },
 ];
 
-const BARCODE_CATALOG = {
-  '8901234567890': {
-    name: 'Organic Oats 500g',
-    ecoScore: 'A',
-    healthScore: 'A',
-    carbonKg: 0.7,
-    alternative: 'Millet Mix 500g (30% lower footprint)'
-  },
-  '9780201379624': {
-    name: 'Protein Snack Bar',
-    ecoScore: 'C',
-    healthScore: 'B',
-    carbonKg: 1.9,
-    alternative: 'Date-Nut Bar (42% lower footprint)'
-  },
-  '4006381333931': {
-    name: 'Packaged Fruit Juice 1L',
-    ecoScore: 'D',
-    healthScore: 'C',
-    carbonKg: 2.2,
-    alternative: 'Fresh Local Juice (55% lower footprint)'
-  },
+const ECO_SCORE_COLOR = {
+  a: 'var(--color-success)',
+  b: '#86efac',
+  c: '#fbbf24',
+  d: '#f97316',
+  e: 'var(--color-error)',
+};
+
+const fetchProductFromOpenFoodFacts = async (barcode) => {
+  const fields = [
+    'product_name',
+    'brands',
+    'quantity',
+    'image_front_small_url',
+    'ecoscore_grade',
+    'ecoscore_score',
+    'nutriscore_grade',
+    'carbon_footprint_from_known_ingredients_100g',
+    'carbon_footprint_percent_of_known_ingredients',
+    'categories_tags',
+  ].join(',');
+
+  const url = `https://world.openfoodfacts.org/api/v2/product/${encodeURIComponent(barcode)}.json?fields=${fields}`;
+  const response = await fetch(url, {
+    headers: { 'User-Agent': 'EcoLife-App/1.0 (rangesh@ecolife.app)' },
+  });
+
+  if (!response.ok) {
+    throw new Error(`Network error: ${response.status}`);
+  }
+
+  const data = await response.json();
+
+  if (data.status !== 1 || !data.product) {
+    throw new Error('Product not found in the Open Food Facts database.');
+  }
+
+  const p = data.product;
+  const ecoGrade = (p.ecoscore_grade || 'unknown').toLowerCase();
+  const nutriGrade = (p.nutriscore_grade || 'unknown').toLowerCase();
+  const carbon = p.carbon_footprint_from_known_ingredients_100g
+    ? parseFloat(p.carbon_footprint_from_known_ingredients_100g).toFixed(2)
+    : null;
+
+  return {
+    name: p.product_name || 'Unknown Product',
+    brand: p.brands || '',
+    quantity: p.quantity || '',
+    imageUrl: p.image_front_small_url || null,
+    ecoScore: ecoGrade !== 'unknown' ? ecoGrade.toUpperCase() : 'N/A',
+    ecoScoreRaw: ecoGrade,
+    healthScore: nutriGrade !== 'unknown' ? nutriGrade.toUpperCase() : 'N/A',
+    healthScoreRaw: nutriGrade,
+    carbonPer100g: carbon,
+    ecoScoreNum: p.ecoscore_score || null,
+  };
 };
 
 const formatTodayKey = () => new Date().toISOString().slice(0, 10);
