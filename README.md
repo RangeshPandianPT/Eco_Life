@@ -18,6 +18,35 @@ EcoLife solves these problems by combining AI-powered planning and product trans
 - **Animation** - Framer Motion for smooth UI animations
 - **Testing** - Jest and React Testing Library setup
 
+## 📌 Feature Scope (Current MVP)
+
+The current release includes a focused MVP scope under the Eco Tools experience.
+
+### 1. Daily Missions + Streak Tracking
+- Users receive 3 daily sustainability missions.
+- Mission completion is tracked with local persistence.
+- Streak days and eco points are calculated in-app.
+
+### 2. Smart Receipt Analyzer
+- Users can paste receipt lines with prices.
+- The app estimates total spend and approximate CO2e impact.
+- A basic sustainability score is generated from parsed items.
+
+### 3. Barcode Product Lookup
+- Users can enter a barcode and retrieve product insights.
+- Current MVP uses a built-in demo catalog.
+- Results include eco score, health score, estimated footprint, and lower-impact alternative suggestions.
+
+### In Scope
+- Frontend implementation in the React app.
+- Route integration through the Eco Tools page.
+- Netlify-ready SPA deployment configuration.
+
+### Out of Scope (Next Phase)
+- OCR-based real image receipt scanning.
+- Live barcode/API product database integration.
+- Backend user profiles, cloud sync, and analytics pipeline.
+
 ## 📋 Prerequisites
 
 - Node.js (v14.x or higher)
