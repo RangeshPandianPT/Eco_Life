@@ -435,30 +435,94 @@ const EcoTools = () => {
             )}
 
             {barcodeResult && (
-              <div className="rounded-lg border border-border bg-background p-4 grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div>
-                  <div className="text-sm text-muted-foreground">Product</div>
-                  <div className="text-lg font-semibold text-foreground">{barcodeResult.name}</div>
+              <div className="rounded-xl border border-border bg-background p-4 grid grid-cols-1 md:grid-cols-3 gap-4">
+                {/* Product image + name */}
+                <div className="flex flex-col items-center md:items-start gap-3">
+                  {barcodeResult.imageUrl ? (
+                    <img
+                      src={barcodeResult.imageUrl}
+                      alt={barcodeResult.name}
+                      className="w-28 h-28 object-contain rounded-lg border border-border bg-muted"
+                    />
+                  ) : (
+                    <div className="w-28 h-28 flex items-center justify-center rounded-lg border border-border bg-muted">
+                      <Icon name="Package" size={36} color="var(--color-muted-foreground)" />
+                    </div>
+                  )}
+                  <div>
+                    <div className="text-xs text-muted-foreground uppercase tracking-wide">
+                      {barcodeResult.brand || 'Unknown brand'}
+                    </div>
+                    <div className="text-base font-semibold text-foreground leading-tight">{barcodeResult.name}</div>
+                    {barcodeResult.quantity && (
+                      <div className="text-xs text-muted-foreground mt-0.5">{barcodeResult.quantity}</div>
+                    )}
+                  </div>
+                </div>
 
-                  <div className="mt-3 grid grid-cols-3 gap-2 text-sm">
-                    <div className="p-2 rounded-md bg-muted">
-                      <div className="text-muted-foreground">Eco</div>
-                      <div className="font-semibold text-foreground">{barcodeResult.ecoScore}</div>
+                {/* Scores */}
+                <div className="space-y-3">
+                  <div className="text-xs font-medium text-muted-foreground uppercase tracking-wide">Scores (live data)</div>
+                  <div className="grid grid-cols-2 gap-2 text-sm">
+                    <div className="p-3 rounded-lg bg-muted flex flex-col gap-1">
+                      <div className="text-muted-foreground text-xs">Eco-Score</div>
+                      <div
+                        className="text-2xl font-bold uppercase"
+                        style={{ color: ECO_SCORE_COLOR[barcodeResult.ecoScoreRaw] || 'var(--color-foreground)' }}
+                      >
+                        {barcodeResult.ecoScore}
+                      </div>
+                      {barcodeResult.ecoScoreNum !== null && (
+                        <div className="text-xs text-muted-foreground">{barcodeResult.ecoScoreNum}/100</div>
+                      )}
                     </div>
-                    <div className="p-2 rounded-md bg-muted">
-                      <div className="text-muted-foreground">Health</div>
-                      <div className="font-semibold text-foreground">{barcodeResult.healthScore}</div>
+                    <div className="p-3 rounded-lg bg-muted flex flex-col gap-1">
+                      <div className="text-muted-foreground text-xs">Nutri-Score</div>
+                      <div
+                        className="text-2xl font-bold uppercase"
+                        style={{ color: ECO_SCORE_COLOR[barcodeResult.healthScoreRaw] || 'var(--color-foreground)' }}
+                      >
+                        {barcodeResult.healthScore}
+                      </div>
                     </div>
-                    <div className="p-2 rounded-md bg-muted">
-                      <div className="text-muted-foreground">CO2e</div>
-                      <div className="font-semibold text-foreground">{barcodeResult.carbonKg} kg</div>
+                  </div>
+
+                  <div className="p-3 rounded-lg bg-muted text-sm">
+                    <div className="text-muted-foreground text-xs mb-1">Carbon (per 100g)</div>
+                    <div className="font-semibold text-foreground">
+                      {barcodeResult.carbonPer100g ? (
+                        <>{barcodeResult.carbonPer100g} g CO₂e</>
+                      ) : (
+                        <span className="text-muted-foreground text-xs">Not available for this product</span>
+                      )}
                     </div>
                   </div>
                 </div>
 
-                <div className="p-3 rounded-md border border-success/30 bg-success/10">
-                  <div className="text-sm text-muted-foreground">Suggested alternative</div>
-                  <div className="font-semibold text-success mt-1">{barcodeResult.alternative}</div>
+                {/* Eco Insight */}
+                <div className="p-4 rounded-lg border border-success/30 bg-success/10 flex flex-col gap-2">
+                  <div className="flex items-center gap-1.5">
+                    <Icon name="Leaf" size={15} color="var(--color-success)" />
+                    <div className="text-xs font-semibold text-success uppercase tracking-wide">Eco Insight</div>
+                  </div>
+                  {barcodeResult.ecoScoreRaw === 'a' || barcodeResult.ecoScoreRaw === 'b' ? (
+                    <p className="text-sm text-foreground">Great choice! This product has a low environmental impact.</p>
+                  ) : barcodeResult.ecoScoreRaw === 'c' ? (
+                    <p className="text-sm text-foreground">Moderate impact. Consider products with an Eco-Score of A or B for a greener alternative.</p>
+                  ) : barcodeResult.ecoScoreRaw === 'd' || barcodeResult.ecoScoreRaw === 'e' ? (
+                    <p className="text-sm text-foreground">High environmental impact. Look for plant-based or locally sourced alternatives with better scores.</p>
+                  ) : (
+                    <p className="text-sm text-foreground">Eco-Score data not yet available for this product. Check the Open Food Facts page for more details.</p>
+                  )}
+                  <a
+                    href={`https://world.openfoodfacts.org/product/${barcodeInput.trim()}`}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="mt-auto inline-flex items-center gap-1 text-xs text-primary underline"
+                  >
+                    View full product page
+                    <Icon name="ExternalLink" size={11} />
+                  </a>
                 </div>
               </div>
             )}
