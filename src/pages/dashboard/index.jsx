@@ -11,6 +11,7 @@ import RecentActivityFeed from './components/RecentActivityFeed';
 import NavigationTiles from './components/NavigationTiles';
 import EcoPetWidget from './components/EcoPetWidget';
 import EcoEducationWidget from './components/EcoEducationWidget';
+import ImpactForecastWidget from './components/ImpactForecastWidget';
 
 const Dashboard = () => {
   const navigate = useNavigate();
@@ -101,6 +102,9 @@ const Dashboard = () => {
 
               {/* AI Recommendations */}
               <AIRecommendationsCarousel />
+
+              {/* Impact Forecast */}
+              <ImpactForecastWidget />
 
               {/* Navigation Tiles */}
               <NavigationTiles />
