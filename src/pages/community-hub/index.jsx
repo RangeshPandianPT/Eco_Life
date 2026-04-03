@@ -5,6 +5,7 @@ import Header from '../../components/ui/Header';
 
 const CommunityHub = () => {
   const [activeTab, setActiveTab] = useState('posts');
+  const [leaderboardScope, setLeaderboardScope] = useState('global');
   const [posts, setPosts] = useState([
     {
       id: 1,
@@ -160,6 +161,15 @@ const CommunityHub = () => {
     }
   ]);
 
+  const [leaderboardMembers, setLeaderboardMembers] = useState([
+    { id: 1, name: 'EcoWarrior_2025', avatar: '🌱', points: 4820, streak: 14, wins: 32, region: 'global', badge: 'Challenge leader' },
+    { id: 2, name: 'GreenGuru', avatar: '🌿', points: 4510, streak: 11, wins: 28, region: 'global', badge: 'Tip champion' },
+    { id: 3, name: 'PlantBased_Pro', avatar: '🌳', points: 4380, streak: 9, wins: 25, region: 'global', badge: 'Recipe curator' },
+    { id: 4, name: 'Alex (You)', avatar: '🌟', points: 2980, streak: 7, wins: 19, region: 'local', badge: 'Rising contributor' },
+    { id: 5, name: 'CycleCity', avatar: '🚲', points: 2810, streak: 10, wins: 15, region: 'local', badge: 'Transport mentor' },
+    { id: 6, name: 'WasteNot_Win', avatar: '♻️', points: 2705, streak: 6, wins: 17, region: 'local', badge: 'Zero-waste guide' }
+  ]);
+
   const handleClaim = (itemId) => {
     alert("Message sent to the owner! Thank you for participating in the circular economy ♻️");
   };
@@ -201,6 +211,18 @@ const CommunityHub = () => {
         : challenge
     ));
   };
+
+  const cheerMember = (memberId) => {
+    setLeaderboardMembers(leaderboardMembers.map((member) =>
+      member.id === memberId
+        ? { ...member, points: member.points + 40, wins: member.wins + 1 }
+        : member
+    ));
+  };
+
+  const visibleLeaderboard = [...leaderboardMembers]
+    .filter((member) => leaderboardScope === 'global' || member.region === 'local')
+    .sort((left, right) => right.points - left.points);
 
   const voteTip = (tipId) => {
     setTips(tips.map(tip =>
@@ -257,7 +279,8 @@ const CommunityHub = () => {
               { id: 'posts', label: 'Community Posts', icon: '💬' },
               { id: 'challenges', label: 'Group Challenges', icon: '🎯' },
               { id: 'tips', label: 'Eco Tips', icon: '💡' },
-              { id: 'marketplace', label: 'Marketplace', icon: '♻️' }
+              { id: 'marketplace', label: 'Marketplace', icon: '♻️' },
+              { id: 'leaderboard', label: 'Leaderboard', icon: '🏅' }
             ].map((tab) => (
               <button
                 key={tab.id}
@@ -528,6 +551,100 @@ const CommunityHub = () => {
                   ))}
                 </div>
               )}
+
+              {activeTab === 'leaderboard' && (
+                <div className="space-y-6">
+                  <div className="bg-white rounded-xl p-6 shadow-lg">
+                    <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-5">
+                      <div>
+                        <h3 className="text-2xl font-bold text-gray-800">Community Leaderboard</h3>
+                        <p className="text-sm text-gray-600 mt-1">Ranked by points, streaks, and community wins.</p>
+                      </div>
+                      <div className="flex items-center gap-2 bg-gray-100 rounded-lg p-1">
+                        {[
+                          { id: 'global', label: 'Global' },
+                          { id: 'local', label: 'Local' }
+                        ].map((scope) => (
+                          <button
+                            key={scope.id}
+                            type="button"
+                            onClick={() => setLeaderboardScope(scope.id)}
+                            className={`px-4 py-2 rounded-md text-sm font-medium transition-colors ${
+                              leaderboardScope === scope.id
+                                ? 'bg-green-500 text-white shadow-sm'
+                                : 'text-gray-600 hover:bg-white'
+                            }`}
+                          >
+                            {scope.label}
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+
+                    <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+                      <div className="bg-green-50 rounded-lg p-4">
+                        <div className="text-sm text-green-700">Top score</div>
+                        <div className="text-2xl font-bold text-green-800">{visibleLeaderboard[0]?.points || 0}</div>
+                      </div>
+                      <div className="bg-blue-50 rounded-lg p-4">
+                        <div className="text-sm text-blue-700">Active streak</div>
+                        <div className="text-2xl font-bold text-blue-800">{Math.max(...visibleLeaderboard.map((member) => member.streak), 0)} days</div>
+                      </div>
+                      <div className="bg-purple-50 rounded-lg p-4">
+                        <div className="text-sm text-purple-700">Members shown</div>
+                        <div className="text-2xl font-bold text-purple-800">{visibleLeaderboard.length}</div>
+                      </div>
+                      <div className="bg-orange-50 rounded-lg p-4">
+                        <div className="text-sm text-orange-700">Community wins</div>
+                        <div className="text-2xl font-bold text-orange-800">{visibleLeaderboard.reduce((sum, member) => sum + member.wins, 0)}</div>
+                      </div>
+                    </div>
+
+                    <div className="space-y-3">
+                      {visibleLeaderboard.map((member, index) => (
+                        <motion.div
+                          key={member.id}
+                          className={`flex items-center justify-between gap-4 p-4 rounded-xl border ${
+                            member.name.includes('You') ? 'border-green-300 bg-green-50' : 'border-gray-200 bg-gray-50'
+                          }`}
+                          initial={{ opacity: 0, y: 12 }}
+                          animate={{ opacity: 1, y: 0 }}
+                          transition={{ delay: index * 0.05 }}
+                        >
+                          <div className="flex items-center gap-4">
+                            <div className="w-12 h-12 rounded-full bg-white flex items-center justify-center text-xl shadow-sm border border-gray-200">
+                              {member.avatar}
+                            </div>
+                            <div>
+                              <div className="flex items-center gap-2 flex-wrap">
+                                <h4 className="font-semibold text-gray-800">{member.name}</h4>
+                                <span className="px-2 py-0.5 rounded-full text-xs bg-white border border-gray-200 text-gray-600">
+                                  #{index + 1}
+                                </span>
+                              </div>
+                              <div className="text-sm text-gray-500">{member.badge}</div>
+                            </div>
+                          </div>
+
+                          <div className="flex items-center gap-3 flex-wrap justify-end">
+                            <div className="text-right">
+                              <div className="text-sm font-semibold text-gray-800">{member.points} pts</div>
+                              <div className="text-xs text-gray-500">{member.streak} day streak • {member.wins} wins</div>
+                            </div>
+                            <button
+                              type="button"
+                              onClick={() => cheerMember(member.id)}
+                              className="px-3 py-2 rounded-lg bg-green-500 text-white text-sm font-medium hover:bg-green-600 transition-colors"
+                            >
+                              Cheer +40
+                            </button>
+                          </div>
+                        </motion.div>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              )}
             </div>
 
             {/* Sidebar */}
@@ -549,20 +666,34 @@ const CommunityHub = () => {
               <div className="bg-white rounded-xl p-6 shadow-lg">
                 <h3 className="font-bold text-gray-800 mb-4">🏆 Weekly Champions</h3>
                 <div className="space-y-3">
-                  {[
-                    { name: 'EcoWarrior_2025', action: 'Most posts shared', avatar: '🌱' },
-                    { name: 'GreenGuru', action: 'Most tips voted', avatar: '🌿' },
-                    { name: 'PlantBased_Pro', action: 'Challenge leader', avatar: '🌳' }
-                  ].map((champion, idx) => (
+                  {visibleLeaderboard.slice(0, 3).map((champion, idx) => (
                     <div key={idx} className="flex items-center space-x-3">
                       <span className="text-lg">{champion.avatar}</span>
                       <div className="flex-1">
                         <div className="font-medium text-gray-800">{champion.name}</div>
-                        <div className="text-xs text-gray-500">{champion.action}</div>
+                        <div className="text-xs text-gray-500">{champion.badge}</div>
                       </div>
                       <span className="text-yellow-500">🏆</span>
                     </div>
                   ))}
+                </div>
+              </div>
+
+              <div className="bg-white rounded-xl p-6 shadow-lg">
+                <h3 className="font-bold text-gray-800 mb-4">📍 Your Standing</h3>
+                <div className="space-y-3 text-sm text-gray-600">
+                  <div className="flex justify-between">
+                    <span>Current rank</span>
+                    <span className="font-semibold text-gray-800">#{visibleLeaderboard.findIndex((member) => member.name.includes('You')) + 1 || '—'}</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span>Points</span>
+                    <span className="font-semibold text-gray-800">{visibleLeaderboard.find((member) => member.name.includes('You'))?.points || 0}</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span>Next target</span>
+                    <span className="font-semibold text-gray-800">3k pts</span>
+                  </div>
                 </div>
               </div>
             </div>

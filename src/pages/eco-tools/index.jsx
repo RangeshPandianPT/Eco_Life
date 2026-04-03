@@ -13,6 +13,33 @@ const DAILY_MISSION_POOL = [
   { id: 'local-food', label: 'Buy one local or seasonal item', points: 20 },
 ];
 
+const OFFSET_PROGRAMS = [
+  {
+    id: 'forest-restoration',
+    title: 'Forest restoration',
+    description: 'Support tree planting and long-term reforestation projects.',
+    costPerTon: '$18',
+    impact: 'High removal potential',
+    icon: 'Trees',
+  },
+  {
+    id: 'clean-cooking',
+    title: 'Clean cooking access',
+    description: 'Fund efficient cookstoves that reduce smoke and fuel usage.',
+    costPerTon: '$12',
+    impact: 'Strong community benefit',
+    icon: 'CookingPot',
+  },
+  {
+    id: 'renewable-energy',
+    title: 'Renewable energy credits',
+    description: 'Back verified wind and solar generation for the grid.',
+    costPerTon: '$9',
+    impact: 'Fastest offset option',
+    icon: 'SunMedium',
+  },
+];
+
 const ECO_SCORE_COLOR = {
   a: 'var(--color-success)',
   b: '#86efac',
@@ -135,6 +162,7 @@ const EcoTools = () => {
   const [completedMissions, setCompletedMissions] = useState([]);
   const [streakDays, setStreakDays] = useState(0);
   const [totalMissionPoints, setTotalMissionPoints] = useState(0);
+  const [monthlyFootprint, setMonthlyFootprint] = useState(420);
 
   const [receiptInput, setReceiptInput] = useState('Spinach 4.50\nTofu Pack 3.20\nSnack Chips 2.30\nOats 3.10');
   const [receiptSummary, setReceiptSummary] = useState(null);
@@ -145,6 +173,17 @@ const EcoTools = () => {
   const [barcodeLoading, setBarcodeLoading] = useState(false);
 
   const dailyMissions = useMemo(() => buildDailyMissions(todayKey), [todayKey]);
+  const offsetPlan = useMemo(() => {
+    const recommendedBudget = Math.max(8, Math.round(monthlyFootprint * 0.02));
+    const treeCount = Math.max(1, Math.round(monthlyFootprint / 110));
+    const offsetPercentage = Math.min(100, Math.round(100 - monthlyFootprint / 6));
+
+    return {
+      recommendedBudget,
+      treeCount,
+      offsetPercentage,
+    };
+  }, [monthlyFootprint]);
 
   useEffect(() => {
     const nowKey = formatTodayKey();
@@ -173,6 +212,7 @@ const EcoTools = () => {
       totalMissionPoints,
     };
     localStorage.setItem('eco-tools-missions', JSON.stringify(payload));
+    window.dispatchEvent(new Event('eco-tools-missions-updated'));
   }, [todayKey, completedMissions, streakDays, totalMissionPoints]);
 
   const completedAllToday = completedMissions.length === dailyMissions.length;
@@ -302,6 +342,113 @@ const EcoTools = () => {
               <span className={`ml-2 ${completedAllToday ? 'text-success' : 'text-muted-foreground'}`}>
                 {completedAllToday ? 'Full mission complete. Streak updated.' : 'Finish all missions to extend your streak.'}
               </span>
+            </div>
+          </section>
+
+          <section className="bg-card border border-border rounded-xl p-6 shadow-organic">
+            <div className="flex items-center gap-3 mb-4">
+              <div className="w-10 h-10 rounded-lg bg-success/15 flex items-center justify-center">
+                <Icon name="ShieldCheck" size={20} color="var(--color-success)" />
+              </div>
+              <div>
+                <h2 className="text-xl font-heading font-semibold text-card-foreground">4) Carbon Offset Planner</h2>
+                <p className="text-sm text-muted-foreground">
+                  Estimate your monthly footprint and choose the offset program that fits your impact goals.
+                </p>
+              </div>
+            </div>
+
+            <div className="grid grid-cols-1 xl:grid-cols-3 gap-4">
+              <div className="xl:col-span-1 rounded-xl border border-border bg-background p-4 space-y-4">
+                <div>
+                  <div className="flex items-center justify-between mb-2">
+                    <label className="text-sm font-medium text-foreground">Monthly footprint estimate</label>
+                    <span className="text-sm font-semibold text-success">{monthlyFootprint} kg CO₂e</span>
+                  </div>
+                  <input
+                    type="range"
+                    min="150"
+                    max="1200"
+                    step="10"
+                    value={monthlyFootprint}
+                    onChange={(event) => setMonthlyFootprint(Number(event.target.value))}
+                    className="w-full accent-[var(--color-success)]"
+                  />
+                  <div className="mt-3 flex flex-wrap gap-2">
+                    {[
+                      { label: 'Low', value: 240 },
+                      { label: 'Average', value: 420 },
+                      { label: 'High', value: 760 },
+                    ].map((preset) => (
+                      <button
+                        key={preset.label}
+                        type="button"
+                        onClick={() => setMonthlyFootprint(preset.value)}
+                        className={`px-3 py-1.5 rounded-full text-xs font-medium transition-organic ${
+                          monthlyFootprint === preset.value
+                            ? 'bg-success text-success-foreground'
+                            : 'bg-muted text-muted-foreground hover:bg-muted/80'
+                        }`}
+                      >
+                        {preset.label}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-2 gap-3">
+                  <div className="rounded-lg border border-border p-3">
+                    <div className="text-xs text-muted-foreground mb-1">Suggested budget</div>
+                    <div className="text-lg font-bold text-foreground">${offsetPlan.recommendedBudget}</div>
+                    <div className="text-xs text-muted-foreground">per month</div>
+                  </div>
+                  <div className="rounded-lg border border-border p-3">
+                    <div className="text-xs text-muted-foreground mb-1">Tree equivalent</div>
+                    <div className="text-lg font-bold text-foreground">{offsetPlan.treeCount}</div>
+                    <div className="text-xs text-muted-foreground">trees restored</div>
+                  </div>
+                </div>
+
+                <div className="rounded-lg bg-success/10 border border-success/20 p-3">
+                  <div className="text-xs uppercase tracking-wide text-success font-semibold mb-1">Offset readiness</div>
+                  <div className="text-2xl font-bold text-foreground">{offsetPlan.offsetPercentage}%</div>
+                  <p className="text-xs text-muted-foreground mt-1">
+                    A higher score means your current habits are already close to net-neutral.
+                  </p>
+                </div>
+              </div>
+
+              <div className="xl:col-span-2 grid grid-cols-1 md:grid-cols-3 gap-3">
+                {OFFSET_PROGRAMS.map((program) => (
+                  <div key={program.id} className="rounded-xl border border-border bg-background p-4 flex flex-col gap-3">
+                    <div className="flex items-start justify-between gap-3">
+                      <div className="w-10 h-10 rounded-lg bg-muted flex items-center justify-center shrink-0">
+                        <Icon name={program.icon} size={20} color="var(--color-success)" />
+                      </div>
+                      <div className="text-right">
+                        <div className="text-xs text-muted-foreground">From</div>
+                        <div className="text-sm font-semibold text-foreground">{program.costPerTon}/ton</div>
+                      </div>
+                    </div>
+
+                    <div>
+                      <h3 className="font-semibold text-foreground">{program.title}</h3>
+                      <p className="text-sm text-muted-foreground mt-1">{program.description}</p>
+                    </div>
+
+                    <div className="mt-auto">
+                      <div className="text-xs text-success font-semibold uppercase tracking-wide">{program.impact}</div>
+                      <button
+                        type="button"
+                        className="mt-3 inline-flex items-center gap-2 px-3 py-2 rounded-lg bg-primary text-primary-foreground text-sm font-medium hover:bg-primary/90 transition-organic"
+                      >
+                        Support program
+                        <Icon name="ArrowUpRight" size={14} />
+                      </button>
+                    </div>
+                  </div>
+                ))}
+              </div>
             </div>
           </section>
 
