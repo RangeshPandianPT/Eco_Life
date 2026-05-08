@@ -1,14 +1,16 @@
-import React from 'react';
-import { useNavigate } from 'react-router-dom';
+import React, { useEffect } from 'react';
+import { useNavigate, useLocation } from 'react-router-dom';
 import Button from 'components/ui/Button';
 import Icon from 'components/AppIcon';
 
 const NotFound = () => {
   const navigate = useNavigate();
+  const location = useLocation();
 
-  const handleGoHome = () => {
-    navigate('/');
-  };
+  useEffect(() => {
+    // Basic event logging hook for product insights
+    console.warn(`[Analytics] 404 Route Hit: ${location.pathname}`);
+  }, [location.pathname]);
 
   return (
     <div className="min-h-screen flex flex-col items-center justify-center bg-background p-4">
@@ -24,23 +26,32 @@ const NotFound = () => {
           The page you're looking for doesn't exist. Let's get you back!
         </p>
 
-        <div className="flex flex-col sm:flex-row gap-4 justify-center">
+        <div className="flex flex-col sm:flex-row gap-4 justify-center flex-wrap">
           <Button
-            variant="primary"
+            variant="outline"
             icon={<Icon name="ArrowLeft" />}
             iconPosition="left"
-            onClick={() => window.history?.back()}
+            onClick={() => navigate(-1)}
           >
             Go Back
           </Button>
 
           <Button
-            variant="outline"
-            icon={<Icon name="Home" />}
+            variant="primary"
+            icon={<Icon name="LayoutDashboard" />}
             iconPosition="left"
-            onClick={handleGoHome}
+            onClick={() => navigate('/dashboard')}
           >
-            Back to Home
+            Go to Dashboard
+          </Button>
+
+          <Button
+            variant="primary"
+            icon={<Icon name="Leaf" />}
+            iconPosition="left"
+            onClick={() => navigate('/eco-tools')}
+          >
+            Go to Eco Tools
           </Button>
         </div>
       </div>
