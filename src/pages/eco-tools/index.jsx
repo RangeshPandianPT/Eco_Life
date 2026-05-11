@@ -2,6 +2,7 @@ import React, { useEffect, useMemo, useState } from 'react';
 import { Helmet } from 'react-helmet';
 import Header from '../../components/ui/Header';
 import Icon from '../../components/AppIcon';
+import EcoPetWidget from '../dashboard/components/EcoPetWidget';
 
 const DAILY_MISSION_POOL = [
   { id: 'walk-3k', label: 'Walk 3,000+ steps instead of driving', points: 15 },
@@ -276,7 +277,7 @@ const EcoTools = () => {
         <Header />
 
         <main className="container mx-auto px-4 lg:px-6 py-8 space-y-8">
-          <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+          <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-8">
             <div>
               <h1 className="text-3xl font-heading font-bold text-foreground">Eco Tools</h1>
               <p className="text-muted-foreground mt-1">
@@ -296,9 +297,12 @@ const EcoTools = () => {
             </div>
           </div>
 
-          <section className="bg-card border border-border rounded-xl p-6 shadow-organic">
-            <div className="flex items-center gap-3 mb-4">
-              <div className="w-10 h-10 rounded-lg bg-success/15 flex items-center justify-center">
+          <div className="grid grid-cols-1 xl:grid-cols-4 gap-8">
+            {/* Main Content Area */}
+            <div className="xl:col-span-3 space-y-8">
+              <section className="bg-card border border-border rounded-xl p-6 shadow-organic">
+                <div className="flex items-center gap-3 mb-4">
+                  <div className="w-10 h-10 rounded-lg bg-success/15 flex items-center justify-center">
                 <Icon name="Target" size={20} color="var(--color-success)" />
               </div>
               <div>
@@ -674,10 +678,17 @@ const EcoTools = () => {
               </div>
             )}
           </section>
-        </main>
+        </div>
+
+        {/* Sidebar / Widget Area */}
+        <div className="xl:col-span-1 space-y-6">
+          <EcoPetWidget />
+        </div>
       </div>
-    </>
-  );
+    </main>
+  </div>
+</>
+);
 };
 
 export default EcoTools;
