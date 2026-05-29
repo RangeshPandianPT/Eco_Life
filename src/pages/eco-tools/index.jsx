@@ -1,4 +1,5 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useState, useRef } from 'react';
+import Tesseract from 'tesseract.js';
 import { Helmet } from 'react-helmet';
 import Header from '../../components/ui/Header';
 import Icon from '../../components/AppIcon';
@@ -167,6 +168,40 @@ const EcoTools = () => {
 
   const [receiptInput, setReceiptInput] = useState('Spinach 4.50\nTofu Pack 3.20\nSnack Chips 2.30\nOats 3.10');
   const [receiptSummary, setReceiptSummary] = useState(null);
+  const [ocrLoading, setOcrLoading] = useState(false);
+  const [ocrProgress, setOcrProgress] = useState(0);
+  const fileInputRef = useRef(null);
+
+  const handleImageUpload = (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    setOcrLoading(true);
+    setOcrProgress(0);
+    setReceiptInput('');
+    setReceiptSummary(null);
+
+    Tesseract.recognize(
+      file,
+      'eng',
+      {
+        logger: m => {
+          if (m.status === 'recognizing text') {
+            setOcrProgress(Math.round(m.progress * 100));
+          }
+        }
+      }
+    ).then(({ data: { text } }) => {
+      setReceiptInput(text);
+      setOcrLoading(false);
+      // Auto analyze
+      const summary = parseReceiptText(text);
+      setReceiptSummary(summary);
+    }).catch(err => {
+      console.error(err);
+      setOcrLoading(false);
+    });
+  };
 
   const [barcodeInput, setBarcodeInput] = useState('');
   const [barcodeResult, setBarcodeResult] = useState(null);
@@ -468,8 +503,26 @@ const EcoTools = () => {
             </div>
 
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-              <div>
-                <label className="text-sm font-medium text-foreground block mb-2">Receipt text</label>
+              <div className="flex flex-col">
+                <label className="text-sm font-medium text-foreground block mb-2">Receipt text or Upload Image</label>
+                <div className="flex gap-2 mb-2">
+                  <input 
+                    type="file" 
+                    accept="image/*"
+                    ref={fileInputRef}
+                    onChange={handleImageUpload}
+                    className="hidden" 
+                  />
+                  <button
+                    type="button"
+                    onClick={() => fileInputRef.current?.click()}
+                    disabled={ocrLoading}
+                    className="flex-1 inline-flex items-center justify-center gap-2 px-4 py-2 bg-secondary text-secondary-foreground rounded-lg hover:bg-secondary/90 transition-organic disabled:opacity-50 border border-border"
+                  >
+                    <Icon name="Camera" size={16} />
+                    {ocrLoading ? `Scanning (${ocrProgress}%)` : 'Upload Receipt Image'}
+                  </button>
+                </div>
                 <textarea
                   value={receiptInput}
                   onChange={(event) => setReceiptInput(event.target.value)}
@@ -479,10 +532,11 @@ const EcoTools = () => {
                 <button
                   type="button"
                   onClick={analyzeReceipt}
-                  className="mt-3 inline-flex items-center gap-2 px-4 py-2 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-organic"
+                  disabled={ocrLoading}
+                  className="mt-3 w-full inline-flex items-center justify-center gap-2 px-4 py-2 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-organic disabled:opacity-50"
                 >
                   <Icon name="Sparkles" size={16} />
-                  Analyze receipt
+                  Analyze text
                 </button>
               </div>
 
