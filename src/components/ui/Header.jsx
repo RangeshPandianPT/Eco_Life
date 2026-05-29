@@ -18,6 +18,8 @@ const Header = () => {
   const moreItems = [
     { label: 'Grocery Generator', path: '/grocery-plan-generator', icon: 'ShoppingCart' },
     { label: 'Eco Tools', path: '/eco-tools', icon: 'WandSparkles' },
+    { label: 'AI Gardening', path: '/gardening-assistant', icon: 'Trees' },
+    { label: 'Community', path: '/community-hub', icon: 'Users' },
   ];
 
   const userProfile = {
