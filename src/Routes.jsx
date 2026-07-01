@@ -17,6 +17,10 @@ import EcoScore from './pages/eco-score';
 import TransportationTracker from './pages/transportation-tracker';
 import EcoTools from './pages/eco-tools';
 import GardeningAssistant from './pages/gardening-assistant';
+import EcoTamagotchi from './pages/eco-tamagotchi';
+import RecipeSharing from './pages/recipe-sharing';
+import CarbonOffset from './pages/carbon-offset';
+import EcoPodcasts from './pages/eco-podcasts';
 
 const Routes = () => {
   return (
@@ -40,6 +44,10 @@ const Routes = () => {
         <Route path="/transportation-tracker" element={<TransportationTracker />} />
         <Route path="/eco-tools" element={<EcoTools />} />
         <Route path="/gardening-assistant" element={<GardeningAssistant />} />
+        <Route path="/eco-tamagotchi" element={<EcoTamagotchi />} />
+        <Route path="/recipe-sharing" element={<RecipeSharing />} />
+        <Route path="/carbon-offset" element={<CarbonOffset />} />
+        <Route path="/eco-podcasts" element={<EcoPodcasts />} />
         <Route path="*" element={<NotFound />} />
       </RouterRoutes>
       </ErrorBoundary>
